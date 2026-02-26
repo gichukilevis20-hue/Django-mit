@@ -1,0 +1,152 @@
+{%extends "base.html"%}
+{%block title%}Dashboard{%endblock%}
+{%block content%}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="fw-bold mb-0">Dashboard</h1>
+        <a href="{% url 'add' %}" class="btn btn-primary">Add Student</a>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="mb-4">
+        <div class="input-group">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search by ID or name..." value="{{ search_query }}">
+            <button class="btn btn-outline-secondary" type="button" id="searchBtn">Search</button>
+            <button class="btn btn-outline-secondary" type="button" id="clearBtn" style="{% if not search_query %}display:none;{% endif %}">Clear</button>
+        </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border">
+                <div class="card-body">
+                    <div class="text-muted small mb-2">{% if search_query %}Results Found{% else %}Total Students{% endif %}</div>
+                    <h3 class="fw-bold mb-0">{{ students.count }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border">
+                <div class="card-body">
+                    <div class="text-muted small mb-2">Active Courses</div>
+                    <h3 class="fw-bold mb-0">4</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Students Table Section -->
+    <div class="card border">
+        <div class="table-responsive">
+            {% if students %}
+                <table class="table table-sm mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Age</th>
+                            <th>Course</th>
+                            <th>Email</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr>
+                            <td><span class="badge bg-secondary">{{ student.id }}</span></td>
+                            <td><strong>{{ student.first_name }} {{ student.last_name }}</strong></td>
+                            <td>{{ student.age }}</td>
+                            <td>{{ student.course }}</td>
+                            <td><a href="mailto:{{ student.email }}" class="text-decoration-none">{{ student.email }}</a></td>
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="{% url 'view' student.id %}" class="btn btn-outline-primary btn-sm">View</a>
+                                    <a href="/admin/schoolapp/student/{{ student.id }}/change/" class="btn btn-outline-warning btn-sm" target="_blank">Edit</a>
+                                    <a href="/admin/schoolapp/student/{{ student.id }}/delete/" class="btn btn-outline-danger btn-sm" target="_blank">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% elif search_query %}
+                <div class="p-4 text-center text-muted">
+                    <p>No students found matching "<strong>{{ search_query }}</strong>". <a href="{% url 'dashboard' %}" class="text-decoration-none">Clear search</a></p>
+                </div>
+            {% else %}
+                <div class="p-4 text-center text-muted">
+                    <p>No students found. <a href="{% url 'add' %}" class="text-decoration-none">Add one</a></p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{%endblock%}
+
+<script>
+document.getElementById('searchInput').addEventListener('keyup', function() {
+    const query = this.value.trim();
+    const clearBtn = document.getElementById('clearBtn');
+    
+    if (query) {
+        clearBtn.style.display = 'block';
+        performSearch(query);
+    } else {
+        clearBtn.style.display = 'none';
+        performSearch('');
+    }
+});
+
+document.getElementById('searchBtn').addEventListener('click', function() {
+    const query = document.getElementById('searchInput').value.trim();
+    performSearch(query);
+});
+
+document.getElementById('clearBtn').addEventListener('click', function() {
+    document.getElementById('searchInput').value = '';
+    this.style.display = 'none';
+    performSearch('');
+});
+
+function performSearch(query) {
+    const url = new URL(window.location);
+    if (query) {
+        url.searchParams.set('search', query);
+    } else {
+        url.searchParams.delete('search');
+    }
+    
+    fetch(url.toString(), {
+        headers: {'X-Requested-With': 'XMLHttpRequest'}
+    })
+    .then(response => response.text())
+    .then(html => {
+        const parser = new DOMParser();
+        const newDoc = parser.parseFromString(html, 'text/html');
+        
+        // Update stats
+        const oldStats = document.querySelector('.row.mb-4');
+        const newStats = newDoc.querySelector('.row.mb-4');
+        if (oldStats && newStats) {
+            oldStats.innerHTML = newStats.innerHTML;
+        }
+        
+        // Update table
+        const oldTable = document.querySelector('.card.border:last-of-type');
+        const newTable = newDoc.querySelector('.card.border:last-of-type');
+        if (oldTable && newTable) {
+            oldTable.innerHTML = newTable.innerHTML;
+        }
+    })
+    .catch(error => console.error('Search error:', error));
+}
+
+// Update URL without page reload
+window.addEventListener('popstate', function() {
+    const params = new URLSearchParams(window.location.search);
+    const searchQuery = params.get('search') || '';
+    document.getElementById('searchInput').value = searchQuery;
+    performSearch(searchQuery);
+});
+</script>

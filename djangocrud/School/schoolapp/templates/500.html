@@ -1,0 +1,16 @@
+{%extends "base.html"%}
+{%block title%}Server Error{%endblock%}
+{%block content%}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 text-center">
+            <h1 class="display-3 fw-bold mb-3">500</h1>
+            <h2 class="h4 mb-3 text-muted">Server Error</h2>
+            <p class="mb-4">Something went wrong on our end. Please try again later.</p>
+            
+            <a href="{% url 'index' %}" class="btn btn-primary">Go to Students</a>
+            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Go to Dashboard</a>
+        </div>
+    </div>
+</div>
+{%endblock%}

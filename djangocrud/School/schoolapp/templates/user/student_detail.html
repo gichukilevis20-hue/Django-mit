@@ -1,0 +1,50 @@
+{%extends "base.html"%}
+{%block title%}Student{%endblock%}
+{%block content%}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col">
+            <a href="{% url 'index' %}" class="btn btn-outline-secondary btn-sm">← Back</a>
+        </div>
+    </div>
+    
+    <div class="card border">
+        <div class="card-body">
+            <h3 class="fw-bold mb-4">{{ student.first_name }} {{ student.last_name }}</h3>
+            
+            <div class="row mb-3">
+                <div class="col-md-6 mb-3">
+                    <div class="text-muted small">ID</div>
+                    <p class="mb-0"><span class="badge bg-secondary">{{ student.id }}</span></p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="text-muted small">Course</div>
+                    <p class="mb-0">{{ student.course }}</p>
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6 mb-3">
+                    <div class="text-muted small">First Name</div>
+                    <p class="mb-0">{{ student.first_name }}</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="text-muted small">Last Name</div>
+                    <p class="mb-0">{{ student.last_name }}</p>
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6 mb-3">
+                    <div class="text-muted small">Age</div>
+                    <p class="mb-0">{{ student.age }}</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="text-muted small">Email</div>
+                    <p class="mb-0"><a href="mailto:{{ student.email }}" class="text-decoration-none">{{ student.email }}</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{%endblock%}

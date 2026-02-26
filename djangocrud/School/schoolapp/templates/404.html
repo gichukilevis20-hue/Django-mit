@@ -1,0 +1,22 @@
+{%extends "base.html"%}
+{%block title%}Page Not Found{%endblock%}
+{%block content%}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 text-center">
+            <h1 class="display-3 fw-bold mb-3">404</h1>
+            <h2 class="h4 mb-3 text-muted">Page Not Found</h2>
+            <p class="mb-4">Sorry, the page or resource you're looking for doesn't exist.</p>
+            
+            {% if request.path %}
+            <p class="small text-muted mb-4">
+                <code>{{ request.path }}</code>
+            </p>
+            {% endif %}
+            
+            <a href="{% url 'index' %}" class="btn btn-primary">Go to Students</a>
+            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Go to Dashboard</a>
+        </div>
+    </div>
+</div>
+{%endblock%}
