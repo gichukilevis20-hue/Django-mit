@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.db.models import Q
 from .forms import studentForm
 from .models import Student
-
+from django.contrib.auth.forms import UserCreationForm
 # Create your views here.
 def index(request):
     students = Student.objects.all()
@@ -19,7 +19,7 @@ def create_student(request):
             return redirect('index')
     else:
         form = studentForm()
-    return render(request, 'admin/studentform.html', {'form': form, 'title': 'Add Student'})
+    return render(request, 'admin/studentform.html', {'form': form, 'title': 'button: Add Student   '})
 
 # r-read-retrieve a record from db (view-only)
 def view_student(request, id):
@@ -87,3 +87,18 @@ def page_not_found(request, exception):
 
 def server_error(request):
     return render(request, '500.html', status=500)
+def update_student(request, id):
+    student = get_object_or_404(Student, id=id)
+    if request.method == 'POST':
+        form = studentForm(request.POST, instance=student)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Student updated successfully!')
+            return redirect('dashboard')
+    else:
+        form = studentForm(instance=student)
+    return render(request, 'admin/studentform.html', {'form': form, 'title': 'Edit Student'})
+def register_user(request):
+    form = UserCreationForm()
+
+    return render(request, 'user/register.html', {'form': form})
