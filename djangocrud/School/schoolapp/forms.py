@@ -1,5 +1,7 @@
 from django import forms
 from .models import Student
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 
 COURSE_CHOICES = [
     ('', '-- Select a course --'),
@@ -18,13 +20,21 @@ class studentForm(forms.ModelForm):
             'list': 'course-list'
         })
     )
-    
+
     class Meta:
         model = Student
-        fields =['first_name','last_name','age','course','email']
+        fields = ['first_name', 'last_name', 'age', 'course', 'email']
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter first name'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter last name'}),
             'age': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter age'}),
             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Enter email'}),
         }
+
+
+class RegisterForm(UserCreationForm):
+    email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Enter email'}))
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'password1', 'password2')

@@ -15,6 +15,7 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+                    {% if user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'index' %}active fw-bold{% endif %}" href="{% url 'index' %}">Students</a>
                     </li>
@@ -27,13 +28,26 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/admin/">Admin</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'register' %}">Register</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Login</a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <form method="get" action="{% url 'search' %}" class="d-flex">
+                            <div class="input-group input-group-sm">
+                                <input type="text" name="q" class="form-control" placeholder="Search students..." value="{{ request.GET.q }}">
+                                <button class="btn btn-outline-secondary" type="submit">Go</button>
+                            </div>
+                        </form>
+                    </li>
                 </ul>
-                <form method="get" action="{% url 'search' %}" class="ms-3">
-                    <div class="input-group input-group-sm">
-                        <input type="text" name="q" class="form-control" placeholder="Search students..." value="{{ request.GET.q }}">
-                        <button class="btn btn-outline-secondary" type="submit">Go</button>
-                    </div>
-                </form>
             </div>
         </div>
     </nav>

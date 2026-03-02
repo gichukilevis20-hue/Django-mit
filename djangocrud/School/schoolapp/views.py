@@ -3,7 +3,13 @@ from django.contrib import messages
 from django.db.models import Q
 from .forms import studentForm
 from .models import Student
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
+from  .forms import RegisterForm
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.models import User
+
+
 # Create your views here.
 def index(request):
     students = Student.objects.all()
@@ -99,6 +105,38 @@ def update_student(request, id):
         form = studentForm(instance=student)
     return render(request, 'admin/studentform.html', {'form': form, 'title': 'Edit Student'})
 def register_user(request):
-    form = UserCreationForm()
-
+    if request.method == 'POST':
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Registration successful! Please login.')
+            return redirect('login')
+    else:
+        form = RegisterForm()
     return render(request, 'user/register.html', {'form': form})
+
+def login_user(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect('dashboard')
+    else:
+        form = AuthenticationForm()
+    return render(request, 'user/login.html', {'form': form})
+
+def delete_student(request, id):
+    student = get_object_or_404(Student, id=id)
+    if request.method == 'POST':
+        student.delete()
+        messages.success(request, 'Student deleted successfully!')
+        return redirect('dashboard')
+    return render(request, 'user/student_delete.html', {'student': student})
+
+def user_dashboard(request):
+    return render(request, 'user/userdashboard.html')
+
+def logout_user(request):
+    logout(request)
+    return redirect('login')

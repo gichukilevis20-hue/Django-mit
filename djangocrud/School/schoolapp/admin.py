@@ -1,5 +1,14 @@
 from django.contrib import admin
+from django.contrib.auth.models import User
+from django.contrib.auth.admin import UserAdmin
 from .models import Student
+
+
+# Customize admin site header
+admin.site.site_header = "School Management Admin"
+admin.site.site_title = "School Admin"
+admin.site.index_title = "Welcome to School Management System"
+
 
 class StudentAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'age', 'course', 'email')
@@ -17,9 +26,5 @@ class StudentAdmin(admin.ModelAdmin):
         }),
     )
 
-admin.site.register(Student, StudentAdmin)
 
-# Customize admin site header
-admin.site.site_header = "School Management Admin"
-admin.site.site_title = "School Admin"
-admin.site.index_title = "Welcome to School Management System"
+admin.site.register(Student, StudentAdmin)
